@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from 'react';
 //import firebase from "firebase/app"
-import {TextField} from '@material-ui/core';
 
 import CurrentScore from "./components/CurrentScore";
 import Scoreboard from "./components/Scoreboard";
@@ -26,7 +25,6 @@ function App() {
     const [probNum, setProbNum] = useState(0);
     const [shuffled, setShuffled] = useState([]);
     const [currScore, setCurr] = useState(0);
-    const [input, setInput] = useState('');
 
 
     // Setup start game
@@ -55,7 +53,7 @@ function App() {
 
 
     // Start game
-    function startGame() {
+    const startGame = () => {
         // Game already running
         if (gameStart) {
             alert('게임이 진행중입니다');
@@ -67,21 +65,24 @@ function App() {
     };
 
     // Next question
-    function nextQ() {
+    const nextQ = (e) => {
+        e.preventDefault();
+        const userInput = document.getElementById('input').value;
         const answer = answers[shuffled[probNum - 1] - 1];
 
-        if (input === answer) {
+        if (userInput === answer) {
             setCurr(currScore + 1);
         }
         setProbNum(probNum + 1);
+        document.getElementById('input').value = '';
     };
     // End game
-    function endGame() {
+    const endGame = () => {
 
     };
 
     // Shuffle array of questions
-    function shuffle(arr) {
+    const shuffle = (arr) => {
         let currentIndex = arr.length;
         let temp;
         let randomIndex;
@@ -103,7 +104,7 @@ function App() {
                 </div>
                 <h1>맞춰봅시다</h1>
                 <div>
-                    <CurrentScore/>
+                    <CurrentScore score={currScore}/>
                 </div>
             </header>
             <br/>
@@ -111,13 +112,15 @@ function App() {
                 <div id="centered">
                     {gameStart === true ?
                         <>
-                            <div className="problem" id="centered">
+                            <div className="problem">
                                 <label className="probNum">#{probNum}</label>
                                 <br/>
                                 <img className="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum - 1]}.jpg`} height="400" />
                                 <br/>
-                                <TextField size="small" className="input" onChange={e=> setInput(e.target.value)}/>
-                                <button className="ans_button" type="button" onClick={nextQ}>Ok</button>
+                                <form className="answer-form" autoComplete="off" onSubmit={nextQ}>
+                                    <input type="text" id="input"></input>
+                                    <button className="ans_button" type="button" onClick={nextQ}>Ok</button>
+                                </form>
                             </div>
                         </>
                         :
