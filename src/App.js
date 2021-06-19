@@ -4,13 +4,16 @@ import React, { useState, useEffect } from 'react';
 //import firebase from "firebase/app"
 import {TextField} from '@material-ui/core';
 
+import CurrentScore from "./components/CurrentScore";
+import Scoreboard from "./components/Scoreboard";
+
 function App() {
 
-    const index = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     const answers = ['슬기','다현','예지','유재석','조세호','이제훈','손흥민','정찬성','박보영'];
 
     const [gameStart, setStart] = useState(false);
-    const [probNum, setNum] = useState(0);
+    const [probNum, setProbNum] = useState(0);
     const [shuffled, setShuffled] = useState([]);
     const [currScore, setCurr] = useState(0);
     const [input, setInput] = useState('');
@@ -21,7 +24,7 @@ function App() {
         // Initialize start
         if (gameStart) {
             setShuffled(shuffle(index));
-            setNum(1);
+            setProbNum(1);
             setCurr(0);
         }
     }, [gameStart]);
@@ -34,8 +37,6 @@ function App() {
                 endGame();
                 alert(`You got ${currScore} correct!`);
             } else {
-                // Next Question
-                const answer = answers[shuffled[probNum] - 1];
 
             }
         }
@@ -46,19 +47,16 @@ function App() {
     function startGame() {
         // Game already running
         if (gameStart) {
-            alert('Game is already running!');
+            alert('게임이 진행중입니다');
             return;
         }
         // Check name
         const nameInput = document.getElementById('name').value;
-        const letters = /^[A-Za-z0-9]+$/;
         if (nameInput === '') {
             alert('Please type your name.');
-        } else if (letters.test(nameInput)) {
+        } else  {
             // Start questions
             setStart(true);
-        } else {
-            alert('Please type alphanumeric characters only.');
         }
     };
 
@@ -67,7 +65,7 @@ function App() {
         if (input === answers[shuffled[probNum] - 1]) {
             setCurr(currScore + 1);
         }
-        setNum(probNum + 1);
+        setProbNum(probNum + 1);
     };
     // End game
     function endGame() {
@@ -92,7 +90,13 @@ function App() {
     return (
         <div className="App">
             <header>
+                <div>
+                    <Scoreboard/>
+                </div>
                 <h1>맞춰봅시다</h1>
+                <div>
+                    <CurrentScore/>
+                </div>
             </header>
             <br/>
             <div className="split left">
@@ -100,11 +104,12 @@ function App() {
                     <label>Name: </label>
                     <input type="text" id="name"></input>
                     <button type="button" id="name_button" onClick={startGame}>Start</button>
+
                     {gameStart &&
                     <div id="problem" className="centered">
                         <label id="probNum">#{probNum}</label>
                         <br/>
-                        <img id="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum]}.jpg`} height="400" />
+                        <img id="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum - 1]}.jpg`} height="400" />
                         <br/>
                         <TextField size="small" className="input" onChange={e=> setInput(e.target.value)}/>
                         <button id="ans_button" type="button" onClick={nextQ}>Ok</button>
