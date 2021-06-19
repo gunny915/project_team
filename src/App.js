@@ -9,8 +9,18 @@ import Scoreboard from "./components/Scoreboard";
 
 function App() {
 
-    const index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const answers = ['슬기','다현','예지','유재석','조세호','이제훈','손흥민','정찬성','박보영'];
+    const index = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const answers = [
+        '슬기',
+        '다현',
+        '예지',
+        '유재석',
+        '조세호',
+        '이제훈',
+        '손흥민',
+        '정찬성',
+        '박보영',
+        '이병헌'];
 
     const [gameStart, setStart] = useState(false);
     const [probNum, setProbNum] = useState(0);
@@ -23,7 +33,8 @@ function App() {
     useEffect(() => {
         // Initialize start
         if (gameStart) {
-            setShuffled(shuffle(index));
+            const shuffledIndex = shuffle(index);
+            setShuffled(shuffledIndex);
             setProbNum(1);
             setCurr(0);
         }
@@ -51,18 +62,15 @@ function App() {
             return;
         }
         // Check name
-        const nameInput = document.getElementById('name').value;
-        if (nameInput === '') {
-            alert('Please type your name.');
-        } else  {
-            // Start questions
-            setStart(true);
-        }
+        setStart(true);
+
     };
 
     // Next question
     function nextQ() {
-        if (input === answers[shuffled[probNum] - 1]) {
+        const answer = answers[shuffled[probNum - 1] - 1];
+
+        if (input === answer) {
             setCurr(currScore + 1);
         }
         setProbNum(probNum + 1);
@@ -78,7 +86,7 @@ function App() {
         let temp;
         let randomIndex;
 
-        while (currentIndex !== 0) {
+        while (currentIndex != 0) {
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex -= 1;
             temp = arr[currentIndex];
@@ -99,21 +107,25 @@ function App() {
                 </div>
             </header>
             <br/>
-            <div className="split left">
-                <div id="left" className="centered">
-                    <label>Name: </label>
-                    <input type="text" id="name"></input>
-                    <button type="button" id="name_button" onClick={startGame}>Start</button>
-
-                    {gameStart &&
-                    <div id="problem" className="centered">
-                        <label id="probNum">#{probNum}</label>
-                        <br/>
-                        <img id="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum - 1]}.jpg`} height="400" />
-                        <br/>
-                        <TextField size="small" className="input" onChange={e=> setInput(e.target.value)}/>
-                        <button id="ans_button" type="button" onClick={nextQ}>Ok</button>
-                    </div>
+            <div className="game">
+                <div id="centered">
+                    {gameStart === true ?
+                        <>
+                            <div className="problem" id="centered">
+                                <label className="probNum">#{probNum}</label>
+                                <br/>
+                                <img className="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum - 1]}.jpg`} height="400" />
+                                <br/>
+                                <TextField size="small" className="input" onChange={e=> setInput(e.target.value)}/>
+                                <button className="ans_button" type="button" onClick={nextQ}>Ok</button>
+                            </div>
+                        </>
+                        :
+                        <>
+                            <p>유명한 사람의 얼굴과 이름을 맞춰볼까요?</p>
+                            <br/>
+                            <button type="button" id="name_button" onClick={startGame}>Start</button>
+                        </>
                     }
                 </div>
             </div>

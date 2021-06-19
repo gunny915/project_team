@@ -1,70 +1,34 @@
-# Getting Started with Create React App
+# 유명인 이름 맞추기 게임
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+유명인의 얼굴을 보고 이름을 맞추는 게임이다.\
+구글 계정으로 로그인하여 게임을 진행하고 하이스코어가 기록된다.\
+Firebase를 이용하여 이미지와 계정 정보를 DB에 저장해놓는다.
 
-## Available Scripts
+## 해야할일
 
-In the project directory, you can run:
+* Open Api 사용하여 구글 로그인 구현
+* DB에 이미지를 저장하여 게임에 불러오기
+* DB에 게임을 플레이했던 유저의 이름과 기록을 남긴다
 
-### `npm start`
+### Open Api 사용하여 구글 로그인 구현
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+현재 게임을 진행할 때 로그인이 따로 필요 없음\
+첫 화면에서 start 버튼을 눌렀을 때 구글 로그인이 되게 하면 될듯\
+이때 구글 로그인을 한 후 우측 상단 My Score라고 되어있는 곳에 현재 내 이름이 안뜨는데 추후 구현 바람\
+My Score 관련 작업은 src/components/CurrentScore.js에 하면 
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### DB에 이미지를 저장하여 게임에 불러오기
 
-### `npm test`
+현재는 public/img/ 폴더 안에 이미지가 1~10까지 들어있고 App.js 내에서 해당 숫자에 맞는 이름을 들고 있다. 
+이를 Firebase Realtime Database에 넣고 프로젝트에 불러오면 된다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### DB에 게임을 플레이했던 유저의 이름과 기록을 남긴다
 
-### `npm run build`
+게임 좌측 상단에 역대 하이스코어 보드가 있다. src/components/Scoreboard.js 에 작업하면 된다.\
+1등부터 3등까지 보여주면 되는데, 구글 로그인 시 저장된 계정 정보를 이용하면 가능할 것으로 생각됨.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 현재 기능 설명
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+게임은 간단히 10문제로 해놓은 상태이다. 사실 모두가 10점을 받을 수 있을 것 같지만 아무튼 그런 상황.\
+게임 진행에 따라 몇 문제를 맞췄는지는 우측 상단 내 스코어에 뜬다.됨
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
