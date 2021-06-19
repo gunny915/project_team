@@ -69,7 +69,6 @@ function App() {
         }
         setNum(probNum + 1);
     };
-    console.log(document.getElementsByClassName('input').value);
     // End game
     function endGame() {
 
@@ -93,7 +92,7 @@ function App() {
     return (
         <div className="App">
             <header>
-                <h1>누구일까요?</h1>
+                <h1>맞춰봅시다</h1>
             </header>
             <br/>
             <div className="split left">
@@ -105,7 +104,7 @@ function App() {
                     <div id="problem" className="centered">
                         <label id="probNum">#{probNum}</label>
                         <br/>
-                        <img id="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum]}.jpg`} width="400" height="400" />
+                        <img id="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum]}.jpg`} height="400" />
                         <br/>
                         <TextField size="small" className="input" onChange={e=> setInput(e.target.value)}/>
                         <button id="ans_button" type="button" onClick={nextQ}>Ok</button>
