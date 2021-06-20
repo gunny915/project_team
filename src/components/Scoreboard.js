@@ -1,6 +1,6 @@
 import React from "react";
 
-const Scoreboard = () => {
+const Scoreboard = (props) => {
     return (
       <div className="scoreboard">
           <h2>High Score</h2>
