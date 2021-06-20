@@ -10,10 +10,12 @@ import firebase from "firebase/app";
 // Add the Firebase services that you want to use
 import "firebase/auth";
 import "firebase/firestore";
+import "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDzurGoekqj6TXobxkgefCeGYU12NJVCAo",
     authDomain: "teamproject-b06dd.firebaseapp.com",
+    databaseURL: "https://teamproject-b06dd.firebaseio.com",
     projectId: "teamproject-b06dd",
     storageBucket: "teamproject-b06dd.appspot.com",
     messagingSenderId: "904090278522",
@@ -26,6 +28,8 @@ if (!firebase.apps.length) {
 }else {
     firebase.app(); // if already initialized, use that one
 }
+
+const storage = firebase.storage();
 
 function App() {
 
@@ -46,7 +50,7 @@ function App() {
     const [probNum, setProbNum] = useState(0);
     const [shuffled, setShuffled] = useState([]);
     const [currScore, setCurr] = useState(0);
-
+    const [imgUrl, setImg] = useState(null);
 
     // Setup start game
     useEffect(() => {
@@ -72,6 +76,20 @@ function App() {
         }
     }, [probNum]);
 
+    // Set up img url to load img from firebase storage
+    useEffect(()=>{
+        if (gameStart) {
+            if (probNum !== 11) {
+                const imgUrls = `gs://teamproject-b06dd.appspot.com/${shuffled[probNum - 1]}.jpg`;
+                const gsReference = storage.refFromURL(imgUrls);
+                gsReference.getDownloadURL().then(function(url) {
+                    setImg(url);
+                }, function(error){
+                    console.log(error);
+                });
+            }
+        }
+    }, [probNum]);
 
     // Start game
     const startGame = () => {
@@ -82,7 +100,6 @@ function App() {
         }
         // Check name
         setStart(true);
-
     };
 
     // Next question
@@ -117,6 +134,7 @@ function App() {
         }
         return arr;
     }
+
     return (
         <div className="App">
             <header>
@@ -136,7 +154,7 @@ function App() {
                             <div className="problem">
                                 <label className="probNum">#{probNum}</label>
                                 <br/>
-                                <img className="img" src={process.env.PUBLIC_URL+`/img/${shuffled[probNum - 1]}.jpg`} height="400" />
+                                <img className="img" src={imgUrl} height="400" />
                                 <br/>
                                 <form className="answer-form" autoComplete="off" onSubmit={nextQ}>
                                     <input type="text" id="input"></input>
