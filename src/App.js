@@ -7,6 +7,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import CurrentScore from "./components/CurrentScore";
 import Scoreboard from "./components/Scoreboard";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDzurGoekqj6TXobxkgefCeGYU12NJVCAo",
   authDomain: "teamproject-b06dd.firebaseapp.com",
@@ -42,6 +43,7 @@ function App() {
   const [login, setLogin] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("")
+
   // Setup start game
   useEffect(() => {
     // Initialize start
@@ -67,7 +69,7 @@ function App() {
 
   // Start game
 
-  var provider = new firebase.auth.GoogleAuthProvider();
+  let provider = new firebase.auth.GoogleAuthProvider();
   provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
   const startGame = () => {
