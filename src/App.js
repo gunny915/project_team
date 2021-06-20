@@ -1,10 +1,31 @@
 import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from 'react';
-//import firebase from "firebase/app"
 
 import CurrentScore from "./components/CurrentScore";
 import Scoreboard from "./components/Scoreboard";
+
+import firebase from "firebase/app";
+
+// Add the Firebase services that you want to use
+import "firebase/auth";
+import "firebase/firestore";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDzurGoekqj6TXobxkgefCeGYU12NJVCAo",
+    authDomain: "teamproject-b06dd.firebaseapp.com",
+    projectId: "teamproject-b06dd",
+    storageBucket: "teamproject-b06dd.appspot.com",
+    messagingSenderId: "904090278522",
+    appId: "1:904090278522:web:496acc94e5a6af37f5f9c3",
+    measurementId: "G-DL6KGTY4YN"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}else {
+    firebase.app(); // if already initialized, use that one
+}
 
 function App() {
 
