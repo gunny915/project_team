@@ -55,7 +55,8 @@ function App() {
     const [login, setLogin] = useState(false);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("")
-
+    const [ranking, setRanking] = useState([]);
+    const [rankingScore, setRankingScore] = useState([]);
 
     // Setup start game
     useEffect(() => {
@@ -122,9 +123,10 @@ function App() {
         setProbNum(probNum + 1);
         document.getElementById('input').value = '';
     };
-    // End game
+    // End game - 게임 종료 시 db에 결과 보내고 다시 받아서 top3 선별
     const endGame = () => {
         createScore();
+        dbGet();
     };
 
     // Shuffle array of questions
@@ -158,43 +160,75 @@ function App() {
 
     const db = firebase.firestore();
 
+    //게임종료 시 user, score 정보 DB에 보냄
     const createScore = () => {
         db.collection("scores").add({
             "user": name,
             "score": currScore
         })
-            .then((docRef) => {
-                console.log(docRef);
+            .then(() => {
             })
             .catch((error) => {
                 console.error(error);
             });
-        console.log(`db work`, name, currScore)
     };
 
-    useEffect(() => {
-        db.collection("scores").where("user", "==", true)
+    //DB에서 오는 데이터 담아두기 위한 빈 Array
+    let dbReceiver = [];
+
+
+    //(db 받아옴)구글 로그인된 상태에서 진행한 결과값만 받아와서 top3 user,score 선별
+    const dbGet = () => {
+        db.collection("scores").where('user','!=', '')
             .get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                console.log(doc.data());
+                dbReceiver.push(doc.data())
             });
+            makeRanking()
         });
-    },[]);
-
-
-    const makeRanking = () => {
-
     }
+
+    //top3 user, score 고르기 (어쩌다보니 hard-coding으로 구현했습니다..)
+    const makeRanking = () => {
+        let s = [-1,-1,-1];   //score
+        let u = ['','',''];   //user
+        for(let i=0 ; i < dbReceiver.length ; i++) {
+            let num = dbReceiver[i]["score"]     //확인할 score
+            if (num > s[0]) {
+                s[2] = s[1]
+                u[2] = u[1]
+                s[1] = s[0]
+                u[1] = u[0]
+                s[0] = num
+                u[0] = dbReceiver[i]["user"]
+            } else if (num > s[1]) {
+                s[2] = s[1]
+                u[2] = u[1]
+                s[1] = num
+                u[1] = dbReceiver[i]["user"]
+            } else if (num > s[2]) {
+                s[2] = num
+                u[2] = dbReceiver[i]["user"]
+            }
+        }
+        setRanking(u)
+        setRankingScore(s)
+    }
+
+    //DB에서 데이터 받음
+    useEffect(() => {
+        dbGet()
+    },[]);
 
 
     return (
         <div className="App">
-            <header onChange={makeRanking}>
-                <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
-                <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-firestore.js"></script>
-
+            <header>
                 <div>
-                    <Scoreboard/>
+                    <Scoreboard
+                        userArr={ranking}
+                        scoreArr={rankingScore}
+                    />
                 </div>
                 <h1>맞춰봅시다</h1>
                 <div>
