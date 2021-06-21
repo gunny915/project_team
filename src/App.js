@@ -12,7 +12,7 @@ import Scoreboard from "./components/Scoreboard";
 const firebaseConfig = {
     apiKey: "AIzaSyDzurGoekqj6TXobxkgefCeGYU12NJVCAo",
     authDomain: "teamproject-b06dd.firebaseapp.com",
-    databaseURL: "https://teamproject-b06dd.firebaseio.com",
+    databaseURL: "https://teamproject-b06dd-default-rtdb.firebaseio.com",
     projectId: "teamproject-b06dd",
     storageBucket: "teamproject-b06dd.appspot.com",
     messagingSenderId: "904090278522",
@@ -29,6 +29,8 @@ if (!firebase.apps.length) {
 }
 
 const storage = firebase.storage();
+
+
 
 function App() {
 
@@ -122,7 +124,7 @@ function App() {
     };
     // End game
     const endGame = () => {
-
+        createScore();
     };
 
     // Shuffle array of questions
@@ -153,9 +155,44 @@ function App() {
             });
     };
 
+
+    const db = firebase.firestore();
+
+    const createScore = () => {
+        db.collection("scores").add({
+            "user": name,
+            "score": currScore
+        })
+            .then((docRef) => {
+                console.log(docRef);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        console.log(`db work`, name, currScore)
+    };
+
+    useEffect(() => {
+        db.collection("scores").where("user", "==", true)
+            .get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                console.log(doc.data());
+            });
+        });
+    },[]);
+
+
+    const makeRanking = () => {
+
+    }
+
+
     return (
         <div className="App">
-            <header>
+            <header onChange={makeRanking}>
+                <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-firestore.js"></script>
+
                 <div>
                     <Scoreboard/>
                 </div>
