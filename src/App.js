@@ -34,7 +34,8 @@ const storage = firebase.storage();
 
 function App() {
 
-    const index = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let problems = [];
+    const problemsCount = 10;
     const answers = [
         '슬기',
         '다현',
@@ -45,7 +46,28 @@ function App() {
         '손흥민',
         '정찬성',
         '박보영',
-        '이병헌'];
+        '이병헌',
+        '정재영',
+        '장광',
+        '양진환',
+        '이재훈',
+        '성유리',
+        '이민정',
+        '전미도',
+        '진선규',
+        '오정세',
+        '조우진',
+        '정려원',
+        '김지원',
+        '양희경',
+        '이혜정',
+        '조용필',
+        '안재모',
+        '김영철',
+        '아이유',
+        '오연서',
+        '김연경'
+    ];
 
     const [gameStart, setStart] = useState(false);
     const [probNum, setProbNum] = useState(0);
@@ -62,7 +84,7 @@ function App() {
     useEffect(() => {
         // Initialize start
         if (gameStart) {
-            const shuffledIndex = shuffle(index);
+            const shuffledIndex = getRandomProblemArray(problems, problemsCount, answers.length);
             setShuffled(shuffledIndex);
             setProbNum(1);
             setCurr(0);
@@ -76,8 +98,6 @@ function App() {
                 setStart(false);
                 endGame();
                 alert(`You got ${currScore} correct!`);
-            } else {
-
             }
         }
     }, [probNum]);
@@ -129,21 +149,15 @@ function App() {
         dbGet();
     };
 
-    // Shuffle array of questions
-    const shuffle = (arr) => {
-        let currentIndex = arr.length;
-        let temp;
-        let randomIndex;
-
-        while (currentIndex != 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            temp = arr[currentIndex];
-            arr[currentIndex] = arr[randomIndex];
-            arr[randomIndex] = temp;
+    // Storage에서 랜덤으로 세팅된 문제 수 만큼 어레이를 만든다.
+    const getRandomProblemArray = (arr, probCount, totalCount) => {
+        while(arr.length < probCount){
+            let r = Math.floor(Math.random() * totalCount) + 1;
+            if(arr.indexOf(r) === -1) arr.push(r);
         }
         return arr;
     }
+
     const loginHandler = () => {
         firebase
             .auth()
@@ -219,7 +233,6 @@ function App() {
     useEffect(() => {
         dbGet()
     },[]);
-
 
     return (
         <div className="App">

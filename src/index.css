@@ -14,7 +14,7 @@ code {
 header {
   display: flex;
   flex-direction: row;
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   justify-content: space-between;
 }
@@ -22,7 +22,7 @@ header {
 .scoreboard {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 300px;
   margin: 0 auto;
   justify-content: space-evenly;
   align-items: center;
@@ -30,7 +30,7 @@ header {
 .current-score {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 300px;
   margin: 0 auto;
   justify-content: space-evenly;
   align-items: center;
