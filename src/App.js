@@ -58,15 +58,10 @@ function App() {
 
     // MARK:- Functions
 
-    // Start game
-    const startGame = () => {
-        setStart(true);
-    };
-
     // Next question
     const nextQ = (e) => {
         e.preventDefault();
-        const userInput = document.getElementById('input').value;
+        const userInput = document.getElementById("input").value;
         const answer = answers[shuffled[probNum - 1] - 1];
 
         // 정답이라면 현재 점수 +1
@@ -77,7 +72,7 @@ function App() {
         setProbNum(probNum + 1);
 
         // 입력칸 초기화
-        document.getElementById('input').value = '';
+        document.getElementById("input").value = "";
     };
 
     // End game - 게임 종료 시 db에 결과 보내고 다시 받아서 top3 선별
@@ -126,7 +121,7 @@ function App() {
 
     // (db 받아옴)구글 로그인된 상태에서 진행한 결과값만 받아와서 top3 user,score 선별
     const dbGetScores = () => {
-        db.collection("scores").where('user','!=', '')
+        db.collection("scores").where("user","!=", "")
             .get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 dbScoreReceiver.push(doc.data());
@@ -136,7 +131,7 @@ function App() {
     }
     // DB에서 정답 가져오기
     const dbGetAnswers = () => {
-        db.collection("answers").where('index','!=', '')
+        db.collection("answers").where("index","!=", "")
             .get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 dbAnswerReceiver.push(doc.data());
