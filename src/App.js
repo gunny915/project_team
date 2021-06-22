@@ -32,45 +32,8 @@ const storage = firebase.storage();
 
 function App() {
 
-    let problems = [];
     const problemsCount = 15;
-    const answers = [
-        '슬기',
-        '다현',
-        '예지',
-        '유재석',
-        '조세호',
-
-        '이제훈',
-        '손흥민',
-        '정찬성',
-        '박보영',
-        '이병헌',
-
-        '정재영',
-        '장광',
-        '양진환',
-        '이재훈',
-        '성유리',
-
-        '이민정',
-        '전미도',
-        '진선규',
-        '오정세',
-        '조우진',
-
-        '정려원',
-        '김지원',
-        '양희경',
-        '이혜정',
-        '조용필',
-
-        '안재모',
-        '김영철',
-        '아이유',
-        '오연서',
-        '김연경'
-    ];
+    const db = firebase.firestore();
 
     const [gameStart, setStart] = useState(false);
     const [probNum, setProbNum] = useState(0);
@@ -82,23 +45,18 @@ function App() {
     const [email, setEmail] = useState("")
     const [ranking, setRanking] = useState([]);
     const [rankingScore, setRankingScore] = useState([]);
+    const [answers, setAnswers] = useState([]);
 
+    let problems = [];
     let provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
-    const db = firebase.firestore();
-
     // DB에서 오는 데이터 담아두기 위한 빈 Array
-    let dbReceiver = [];
+    let dbScoreReceiver = [];
+    let dbAnswerReceiver = [];
 
     // Start game
     const startGame = () => {
-        // Game already running
-        if (gameStart) {
-            alert('게임이 진행중입니다');
-            return;
-        }
-        // Check name
         setStart(true);
     };
 
@@ -117,8 +75,10 @@ function App() {
 
     // End game - 게임 종료 시 db에 결과 보내고 다시 받아서 top3 선별
     const endGame = () => {
+        setCurr(0);
         createScore();
-        dbGet();
+        dbGetScores();
+        setImg(null);
     };
 
     // Storage에서 랜덤으로 세팅된 문제 수 만큼 어레이를 만든다.
@@ -157,13 +117,22 @@ function App() {
     };
 
     // (db 받아옴)구글 로그인된 상태에서 진행한 결과값만 받아와서 top3 user,score 선별
-    const dbGet = () => {
+    const dbGetScores = () => {
         db.collection("scores").where('user','!=', '')
             .get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                dbReceiver.push(doc.data())
+                dbScoreReceiver.push(doc.data());
             });
-            makeRanking()
+            makeRanking();
+        });
+    }
+    const dbGetAnswers = () => {
+        db.collection("answers").where('index','!=', '')
+            .get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                dbAnswerReceiver.push(doc.data());
+            });
+            makeAnswers();
         });
     }
 
@@ -171,32 +140,42 @@ function App() {
     const makeRanking = () => {
         let s = [-1,-1,-1];   //score
         let u = ['','',''];   //user
-        for(let i=0 ; i < dbReceiver.length ; i++) {
-            let num = dbReceiver[i]["score"]     //확인할 score
+        for(let i=0 ; i < dbScoreReceiver.length ; i++) {
+            let num = dbScoreReceiver[i]["score"] ;    //확인할 score
             if (num > s[0]) {
-                s[2] = s[1]
-                u[2] = u[1]
-                s[1] = s[0]
-                u[1] = u[0]
-                s[0] = num
-                u[0] = dbReceiver[i]["user"]
+                s[2] = s[1];
+                u[2] = u[1];
+                s[1] = s[0];
+                u[1] = u[0];
+                s[0] = num;
+                u[0] = dbScoreReceiver[i]["user"];
             } else if (num > s[1]) {
-                s[2] = s[1]
-                u[2] = u[1]
-                s[1] = num
-                u[1] = dbReceiver[i]["user"]
+                s[2] = s[1];
+                u[2] = u[1];
+                s[1] = num;
+                u[1] = dbScoreReceiver[i]["user"];
             } else if (num > s[2]) {
-                s[2] = num
-                u[2] = dbReceiver[i]["user"]
+                s[2] = num;
+                u[2] = dbScoreReceiver[i]["user"];
             }
         }
-        setRanking(u)
-        setRankingScore(s)
+        setRanking(u);
+        setRankingScore(s);
     }
 
-    //DB에서 데이터 받음
+    const makeAnswers = () => {
+        let temp = [];
+        for(let i = 0; i < dbAnswerReceiver.length; i++) {
+            const answer = dbAnswerReceiver[i]["answer"];
+            temp.push(answer);
+        }
+        setAnswers(temp);
+    }
+
+    // DB에서 데이터 받음
     useEffect(() => {
-        dbGet()
+        dbGetScores();
+        dbGetAnswers()
     },[]);
 
 
@@ -216,9 +195,8 @@ function App() {
         if (gameStart) {
             if (probNum > problemsCount) {
                 setStart(false);
-                endGame();
                 alert(`You got ${currScore} correct!`);
-                setCurr(0);
+                endGame();
             }
         }
     }, [probNum]);
