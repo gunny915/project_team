@@ -1,6 +1,6 @@
-import logo from "./logo.svg";
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import { Button } from "@material-ui/core";
 import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/auth";
@@ -20,11 +20,9 @@ const firebaseConfig = {
     measurementId: "G-DL6KGTY4YN"
 };
 
-//firebase.initializeApp(firebaseConfig);
-
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-}else {
+} else {
     firebase.app(); // if already initialized, use that one
 }
 
@@ -35,33 +33,38 @@ const storage = firebase.storage();
 function App() {
 
     let problems = [];
-    const problemsCount = 10;
+    const problemsCount = 15;
     const answers = [
         '슬기',
         '다현',
         '예지',
         '유재석',
         '조세호',
+
         '이제훈',
         '손흥민',
         '정찬성',
         '박보영',
         '이병헌',
+
         '정재영',
         '장광',
         '양진환',
         '이재훈',
         '성유리',
+
         '이민정',
         '전미도',
         '진선규',
         '오정세',
         '조우진',
+
         '정려원',
         '김지원',
         '양희경',
         '이혜정',
         '조용필',
+
         '안재모',
         '김영철',
         '아이유',
@@ -80,45 +83,13 @@ function App() {
     const [ranking, setRanking] = useState([]);
     const [rankingScore, setRankingScore] = useState([]);
 
-    // Setup start game
-    useEffect(() => {
-        // Initialize start
-        if (gameStart) {
-            const shuffledIndex = getRandomProblemArray(problems, problemsCount, answers.length);
-            setShuffled(shuffledIndex);
-            setProbNum(1);
-            setCurr(0);
-        }
-    }, [gameStart]);
-
-    // Set up next question
-    useEffect(() => {
-        if (gameStart) {
-            if (probNum === 11) {
-                setStart(false);
-                endGame();
-                alert(`You got ${currScore} correct!`);
-            }
-        }
-    }, [probNum]);
-
-    // Set up img url to load img from firebase storage
-    useEffect(()=>{
-        if (gameStart) {
-            if (probNum !== 11) {
-                const imgUrls = `gs://teamproject-b06dd.appspot.com/${shuffled[probNum - 1]}.jpg`;
-                const gsReference = storage.refFromURL(imgUrls);
-                gsReference.getDownloadURL().then(function(url) {
-                    setImg(url);
-                }, function(error){
-                    console.log(error);
-                });
-            }
-        }
-    }, [probNum]);
-
     let provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+
+    const db = firebase.firestore();
+
+    // DB에서 오는 데이터 담아두기 위한 빈 Array
+    let dbReceiver = [];
 
     // Start game
     const startGame = () => {
@@ -143,6 +114,7 @@ function App() {
         setProbNum(probNum + 1);
         document.getElementById('input').value = '';
     };
+
     // End game - 게임 종료 시 db에 결과 보내고 다시 받아서 top3 선별
     const endGame = () => {
         createScore();
@@ -171,10 +143,7 @@ function App() {
             });
     };
 
-
-    const db = firebase.firestore();
-
-    //게임종료 시 user, score 정보 DB에 보냄
+    // 게임종료 시 user, score 정보 DB에 보냄
     const createScore = () => {
         db.collection("scores").add({
             "user": name,
@@ -187,11 +156,7 @@ function App() {
             });
     };
 
-    //DB에서 오는 데이터 담아두기 위한 빈 Array
-    let dbReceiver = [];
-
-
-    //(db 받아옴)구글 로그인된 상태에서 진행한 결과값만 받아와서 top3 user,score 선별
+    // (db 받아옴)구글 로그인된 상태에서 진행한 결과값만 받아와서 top3 user,score 선별
     const dbGet = () => {
         db.collection("scores").where('user','!=', '')
             .get().then((querySnapshot) => {
@@ -202,7 +167,7 @@ function App() {
         });
     }
 
-    //top3 user, score 고르기 (어쩌다보니 hard-coding으로 구현했습니다..)
+    // top3 user, score 고르기 (어쩌다보니 hard-coding으로 구현했습니다..)
     const makeRanking = () => {
         let s = [-1,-1,-1];   //score
         let u = ['','',''];   //user
@@ -234,28 +199,68 @@ function App() {
         dbGet()
     },[]);
 
+
+    // Setup start game
+    useEffect(() => {
+        // Initialize start
+        if (gameStart) {
+            const shuffledIndex = getRandomProblemArray(problems, problemsCount, answers.length);
+            setShuffled(shuffledIndex);
+            setProbNum(1);
+            setCurr(0);
+        }
+    }, [gameStart]);
+
+    // Set up next question
+    useEffect(() => {
+        if (gameStart) {
+            if (probNum > problemsCount) {
+                setStart(false);
+                endGame();
+                alert(`You got ${currScore} correct!`);
+                setCurr(0);
+            }
+        }
+    }, [probNum]);
+
+    // Set up img url to load img from firebase storage
+    useEffect(()=>{
+        if (gameStart) {
+            if (probNum <= problemsCount) {
+                const imgUrls = `gs://teamproject-b06dd.appspot.com/${shuffled[probNum - 1]}.jpg`;
+                const gsReference = storage.refFromURL(imgUrls);
+                gsReference.getDownloadURL().then(function(url) {
+                    setImg(url);
+                }, function(error){
+                    console.log(error);
+                });
+            }
+        }
+    }, [probNum]);
+
     return (
         <div className="App">
             <header>
-                <div>
+                <div className="header-left">
                     <Scoreboard
                         userArr={ranking}
                         scoreArr={rankingScore}
                     />
                 </div>
-                <h1>맞춰봅시다</h1>
-                <div>
+                <h1>이름 맞추기</h1>
+                <div className="header-right">
                     <CurrentScore
                         score={currScore}
                         login={login}
                         loginHandler={loginHandler}
-                        name = {name}
+                        name={name}
+                        probNum={problemsCount}
                     />
                 </div>
             </header>
             <br/>
             <div className="game">
-                <div id="centered">
+                <div>
                     {gameStart === true ?
                         <>
                             <div className="problem">
@@ -264,22 +269,21 @@ function App() {
                                 <img className="img" src={imgUrl} height="400" />
                                 <br/>
                                 <form className="answer-form" autoComplete="off" onSubmit={nextQ}>
-                                    <input type="text" id="input"></input>
-                                    <button className="ans_button" type="button" onClick={nextQ}>Ok</button>
+                                    <input type="text" id="input"/>
+                                    <button type="submit" className="ans_button">Ok</button>
                                 </form>
                             </div>
                         </>
                         :
                         <>
-                            <p>유명한 사람의 얼굴과 이름을 맞춰볼까요?</p>
-                            <br/>
-                            <button type="button" id="name_button" onClick={startGame}>Start</button>
+                            <div className="pre-start">
+                                <span>유명한 사람의 얼굴과 이름을 맞춰볼까요?</span>
+                                <span>총 {problemsCount}문제가 출제되며 구글 로그인을 통해 스코어보드에 이름을 올리세요!</span>
+                                <Button type="button" variant="contained" size="large" color="primary" onClick={startGame}>Start</Button>
+                            </div>
                         </>
                     }
                 </div>
-            </div>
-            <div className="split right">
-
             </div>
         </div>
     );
