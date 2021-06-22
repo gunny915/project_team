@@ -32,6 +32,7 @@ const storage = firebase.storage();
 
 function App() {
 
+    // MARK:- Variables
     const problemsCount = 15;
     const db = firebase.firestore();
 
@@ -55,6 +56,8 @@ function App() {
     let dbScoreReceiver = [];
     let dbAnswerReceiver = [];
 
+    // MARK:- Functions
+
     // Start game
     const startGame = () => {
         setStart(true);
@@ -66,10 +69,14 @@ function App() {
         const userInput = document.getElementById('input').value;
         const answer = answers[shuffled[probNum - 1] - 1];
 
+        // 정답이라면 현재 점수 +1
         if (userInput === answer) {
             setCurr(currScore + 1);
         }
+        // 다음 문제로 + 1
         setProbNum(probNum + 1);
+
+        // 입력칸 초기화
         document.getElementById('input').value = '';
     };
 
@@ -81,7 +88,7 @@ function App() {
         setImg(null);
     };
 
-    // Storage에서 랜덤으로 세팅된 문제 수 만큼 어레이를 만든다.
+    // Storage의 파일 수 totalCount로부터 사이즈가 probCount인 랜덤 Array 생성
     const getRandomProblemArray = (arr, probCount, totalCount) => {
         while(arr.length < probCount){
             let r = Math.floor(Math.random() * totalCount) + 1;
@@ -90,6 +97,7 @@ function App() {
         return arr;
     }
 
+    // Google log-in
     const loginHandler = () => {
         firebase
             .auth()
@@ -103,7 +111,7 @@ function App() {
             });
     };
 
-    // 게임종료 시 user, score 정보 DB에 보냄
+    // 게임 종료 시 user, score 정보 DB에 보냄
     const createScore = () => {
         db.collection("scores").add({
             "user": name,
@@ -126,6 +134,7 @@ function App() {
             makeRanking();
         });
     }
+    // DB에서 정답 가져오기
     const dbGetAnswers = () => {
         db.collection("answers").where('index','!=', '')
             .get().then((querySnapshot) => {
@@ -162,7 +171,7 @@ function App() {
         setRanking(u);
         setRankingScore(s);
     }
-
+    // 정답 Array 생성
     const makeAnswers = () => {
         let temp = [];
         for(let i = 0; i < dbAnswerReceiver.length; i++) {
@@ -172,6 +181,8 @@ function App() {
         setAnswers(temp);
     }
 
+    // MARK:- useEffect
+
     // DB에서 데이터 받음
     useEffect(() => {
         dbGetScores();
@@ -179,9 +190,8 @@ function App() {
     },[]);
 
 
-    // Setup start game
+    // Set up game
     useEffect(() => {
-        // Initialize start
         if (gameStart) {
             const shuffledIndex = getRandomProblemArray(problems, problemsCount, answers.length);
             setShuffled(shuffledIndex);
@@ -190,7 +200,7 @@ function App() {
         }
     }, [gameStart]);
 
-    // Set up next question
+    // Finish game when probNum exceeds problemsCount
     useEffect(() => {
         if (gameStart) {
             if (probNum > problemsCount) {
@@ -257,7 +267,7 @@ function App() {
                             <div className="pre-start">
                                 <span>유명한 사람의 얼굴과 이름을 맞춰볼까요?</span>
                                 <span>총 {problemsCount}문제가 출제되며 구글 로그인을 통해 스코어보드에 이름을 올리세요!</span>
-                                <Button type="button" variant="contained" size="large" color="primary" onClick={startGame}>Start</Button>
+                                <Button type="button" variant="contained" size="large" color="primary" onClick={() => setStart(true)}>Start</Button>
                             </div>
                         </>
                     }
