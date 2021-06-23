@@ -58,6 +58,14 @@ function App() {
 
     // MARK:- Functions
 
+    // Start Game
+    const startGame = () => {
+        if (answers.length === 0) {
+            alert('잠시 후에 다시 시도해 주세요!')
+        } else {
+            setStart(true);
+        }
+    }
     // Next question
     const nextQ = (e) => {
         e.preventDefault();
@@ -103,6 +111,7 @@ function App() {
                 setLogin(true)
             })
             .catch((error) => {
+                console.log(error);
             });
     };
 
@@ -262,7 +271,7 @@ function App() {
                             <div className="pre-start">
                                 <span>유명한 사람의 얼굴과 이름을 맞춰볼까요?</span>
                                 <span>총 {problemsCount}문제가 출제되며 구글 로그인을 통해 스코어보드에 이름을 올리세요!</span>
-                                <Button type="button" variant="contained" size="large" color="primary" onClick={() => setStart(true)}>Start</Button>
+                                <Button type="button" variant="contained" size="large" color="primary" onClick={startGame}>Start</Button>
                             </div>
                         </>
                     }
